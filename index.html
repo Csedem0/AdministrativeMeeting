@@ -109,6 +109,18 @@
       <li><strong>Chair:</strong><br><input type="text" id="chair" name="chair" required></li>
       <li><strong>Secretary:</strong><br><input type="text" id="secretary" name="secretary" required></li>
     </ul>
+    <h2>Summary of Last Meeting</h2>
+    <textarea id="summaryLastMeeting" name="summaryLastMeeting" rows="4" required></textarea>
+    <p><strong>ATTENTION:</strong></p>
+    <p>
+      It is extremely important for you to read this agenda prior to attending the meeting. In order for you to be prepared, you must read the meeting agenda and come to the meeting prepared with any information, suggestions, or concerns you may have regarding the topics provided.
+    </p>
+    <p>
+      If there is a topic not yet listed that you find important, please contact the staff member who created the agenda in order to provide your suggested topic. Please also provide a note for the description of points that can be discussed.
+    </p>
+    <p>
+      DURING THE MEETING: Your input is important; please provide your opinions as it assists the company in its growth.
+    </p>
     <h2>ATTENDEES:</h2>
     <ol>
       <li><input type="text" name="attendee1" required></li>
@@ -301,6 +313,13 @@
       addText(`Location: ${document.getElementById('location').value}`, textFontSize, 5);
       addText(`Chair: ${document.getElementById('chair').value}`, textFontSize, 5);
       addText(`Secretary: ${document.getElementById('secretary').value}`, textFontSize, 5);
+      addText('Summary of Last Meeting', subtitleFontSize, 10);
+      addText(`${document.getElementById('summaryLastMeeting').value}`, textFontSize, 5);
+
+      addText('ATTENTION:', subtitleFontSize, 10);
+      addText('It is extremely important for you to read this agenda prior to attending the meeting. In order for you to be prepared, you must read the meeting agenda and come to the meeting prepared with any information, suggestions, or concerns you may have regarding the topics provided.', textFontSize, 5);
+      addText('If there is a topic not yet listed that you find important, please contact the staff member who created the agenda in order to provide your suggested topic. Please also provide a note for the description of points that can be discussed.', textFontSize, 5);
+      addText('DURING THE MEETING: Your input is important; please provide your opinions as it assists the company in its growth.', textFontSize, 5);
 
       addText('ATTENDEES:', subtitleFontSize, 10);
       for (let i = 1; i <= 10; i++) {
