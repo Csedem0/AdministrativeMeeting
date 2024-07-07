@@ -72,6 +72,19 @@
       width: 100px;
       margin-right: 20px;
     }
+    #signatureCanvas {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+      height: 200px;
+      margin-bottom: 10px;
+    }
+    #clearSignature {
+      background-color: #e74c3c;
+    }
+    #clearSignature:hover {
+      background-color: #c0392b;
+    }
   </style>
 </head>
 <body>
@@ -208,6 +221,9 @@
     </table>
     <p><strong>Prepared By:</strong><br><input type="text" id="preparedBy" name="preparedBy" required></p>
     <p><strong>Witness:</strong><br><input type="text" id="witness" name="witness" required></p>
+    <h2>Signature:</h2>
+    <canvas id="signatureCanvas"></canvas>
+    <button type="button" id="clearSignature">Clear Signature</button>
     <button type="button" onclick="saveProgress()">Save Progress</button>
     <button type="button" onclick="generatePDF()">Save as PDF</button>
   </form>
@@ -216,6 +232,7 @@
   <script>
     const { jsPDF } = window.jspdf;
 
+    // Function to save progress
     function saveProgress() {
       const form = document.getElementById('meetingForm');
       const formData = new FormData(form);
@@ -223,10 +240,13 @@
       formData.forEach((value, key) => {
         data[key] = value;
       });
+      const signature = document.getElementById('signatureCanvas').toDataURL();
+      data.signature = signature;
       localStorage.setItem('meetingFormData', JSON.stringify(data));
       alert('Progress saved successfully!');
     }
 
+    // Function to load progress
     function loadProgress() {
       const data = JSON.parse(localStorage.getItem('meetingFormData'));
       if (data) {
@@ -236,9 +256,19 @@
             element.value = data[key];
           }
         });
+        if (data.signature) {
+          const canvas = document.getElementById('signatureCanvas');
+          const ctx = canvas.getContext('2d');
+          const img = new Image();
+          img.onload = function() {
+            ctx.drawImage(img, 0, 0);
+          }
+          img.src = data.signature;
+        }
       }
     }
 
+    // Function to generate PDF
     function generatePDF() {
       const doc = new jsPDF();
       const titleFontSize = 22;
@@ -296,8 +326,50 @@
       addText(`Prepared By: ${document.getElementById('preparedBy').value}`, textFontSize, 10);
       addText(`Witness: ${document.getElementById('witness').value}`, textFontSize, 5);
 
+      // Add signature to the PDF
+      const signature = document.getElementById('signatureCanvas').toDataURL('image/png');
+      doc.addImage(signature, 'PNG', marginLeft, startY + 10, 100, 50);
+
       doc.save('meeting_agenda.pdf');
     }
+
+    // Signature canvas functionality
+    const canvas = document.getElementById('signatureCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+
+    canvas.addEventListener('mousedown', e => {
+      isDrawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
+
+    canvas.addEventListener('mousemove', e => {
+      if (isDrawing) {
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (isDrawing) {
+        ctx.stroke();
+        ctx.closePath();
+        isDrawing = false;
+      }
+    });
+
+    canvas.addEventListener('mouseout', () => {
+      if (isDrawing) {
+        ctx.stroke();
+        ctx.closePath();
+        isDrawing = false;
+      }
+    });
+
+    document.getElementById('clearSignature').addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
 
     window.onload = loadProgress;
   </script>
