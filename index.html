@@ -208,12 +208,36 @@
     </table>
     <p><strong>Prepared By:</strong><br><input type="text" id="preparedBy" name="preparedBy" required></p>
     <p><strong>Witness:</strong><br><input type="text" id="witness" name="witness" required></p>
+    <button type="button" onclick="saveProgress()">Save Progress</button>
     <button type="button" onclick="generatePDF()">Save as PDF</button>
   </form>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
   <script>
     const { jsPDF } = window.jspdf;
+
+    function saveProgress() {
+      const form = document.getElementById('meetingForm');
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+      localStorage.setItem('meetingFormData', JSON.stringify(data));
+      alert('Progress saved successfully!');
+    }
+
+    function loadProgress() {
+      const data = JSON.parse(localStorage.getItem('meetingFormData'));
+      if (data) {
+        Object.keys(data).forEach(key => {
+          const element = document.querySelector(`[name="${key}"]`);
+          if (element) {
+            element.value = data[key];
+          }
+        });
+      }
+    }
 
     function generatePDF() {
       const doc = new jsPDF();
@@ -245,7 +269,7 @@
       addText(`Location: ${document.getElementById('location').value}`, textFontSize, 5);
       addText(`Chair: ${document.getElementById('chair').value}`, textFontSize, 5);
       addText(`Secretary: ${document.getElementById('secretary').value}`, textFontSize, 5);
-      
+
       addText('ATTENDEES:', subtitleFontSize, 10);
       for (let i = 1; i <= 10; i++) {
         addText(`${i}. ${document.querySelector(`input[name="attendee${i}"]`).value}`, textFontSize, 5);
@@ -274,6 +298,8 @@
 
       doc.save('meeting_agenda.pdf');
     }
+
+    window.onload = loadProgress;
   </script>
 </body>
 </html>
